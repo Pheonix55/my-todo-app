@@ -1,0 +1,36 @@
+:root {
+  --color-bg: #ffffff;
+  --color-text: #1e1e1e;
+  --color-primary: #ff6f61; /* Vibrant Coral */
+  --color-secondary: #5f27cd; /* Electric Purple */
+  --color-accent: #00cec9; /* Bright Cyan */
+  --color-success: #55efc4; /* Light Mint */
+  --color-warning: #ffeaa7; /* Soft Yellow */
+  --color-error: #d63031; /* Red */
+  --color-info: #74b9ff; /* Light Blue */
+
+  --color-nav-bg: #f0f0f0;
+  --color-nav-text: #1e1e1e;
+  --border-radius: 10px;
+}
+
+[data-theme="dark"] {
+  --color-bg: #1e1e1e;
+  --color-text: #f5f5f5;
+  --color-primary: #ff6f61; /* Same Coral for consistency */
+  --color-secondary: #a29bfe; /* Lighter Purple */
+  --color-accent: #00cec9;
+  --color-success: #00b894; /* Teal Green */
+  --color-warning: #fdcb6e;
+  --color-error: #e17055;
+  --color-info: #0984e3;
+
+  --color-nav-bg: #2d2d2d;
+  --color-nav-text: #f5f5f5;
+  --border-radius: 10px;
+}
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}

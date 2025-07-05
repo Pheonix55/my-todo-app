@@ -1,0 +1,6 @@
+# Laravel
+/react-app-api/vendor
+/react-app-api/.env
+
+# Node
+/laravel-react-app-frontend/node_modules

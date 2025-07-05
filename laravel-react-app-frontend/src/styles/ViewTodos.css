@@ -1,0 +1,63 @@
+.table-wrapper {
+  padding: 1rem;
+  overflow-x: auto;
+}
+
+.todo-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.todo-table th,
+.todo-table td {
+  padding: 0.75rem 1rem;
+  border: 1px solid #eaeaea;
+  text-align: left;
+  color: var(--color-text);
+}
+
+.todo-table th {
+  background-color: var(--color-nav-bg);
+  color: var(--color-nav-text);
+  font-weight: 600;
+}
+
+.todo-table tr:hover {
+  background-color: var(--color-warning);
+}
+
+.edit-btn,
+.delete-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-right: 0.5rem;
+  padding: 0.3rem;
+  border-radius: var(--border-radius);
+  transition: background 0.2s ease;
+}
+
+.edit-btn:hover {
+  background-color: var(--color-info);
+}
+
+.delete-btn:hover {
+  background-color: var(--color-error);
+}
+
+.edit-btn svg,
+.delete-btn svg {
+  fill: var(--color-text);
+  transition: fill 0.2s ease;
+}
+
+.edit-btn:hover svg {
+  fill: #ffffff;
+}
+
+.delete-btn:hover svg {
+  fill: #ffffff;
+}
