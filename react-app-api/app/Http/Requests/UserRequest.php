@@ -4,9 +4,11 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-
-class TodoRequest extends FormRequest
+class UserRequest extends FormRequest
 {
+    /**
+     * Determine if the user is authorized to make this request.
+     */
     public function authorize(): bool
     {
         return true;
@@ -17,9 +19,8 @@ class TodoRequest extends FormRequest
     {
 
         return [
-            'title' => 'required|string|max:255',
-            'description' => 'required|string|max:1000',
-            'is_done' => 'required|boolean',
+            'email' => 'required|email',
+            'password' => 'required|string|min:6', // password_confirmation field required
         ];
     }
 
@@ -36,13 +37,5 @@ class TodoRequest extends FormRequest
     //     return $data;
     // }
 
-    public function messages(): array
-    {
-        return [
-            'title.required' => 'The title is required.',
-            'description.required' => 'The description is required.',
-            'is_done.required' => 'The is_done field is required.',
-            'is_done.boolean' => 'The is_done field must be true or false.',
-        ];
-    }
+
 }

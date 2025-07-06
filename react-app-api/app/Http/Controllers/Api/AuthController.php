@@ -3,37 +3,30 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\RegisterUserRequest;
+use App\Http\Requests\UserRequest;
+use App\Http\Resources\UserResource;
 use App\Models\User;
+use App\Services\UserService;
+use Error;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\ValidationException;
 use Throwable;
 
 class AuthController extends Controller
 {
     // Register
-    public function register(Request $request)
+    public function register(RegisterUserRequest $request, UserService $service)
     {
         try {
-            $request->validate([
-                'name' => 'required|string|max:255',
-                'email' => 'required|email|unique:users,email',
-                'password' => 'required|string|min:6|confirmed', // password_confirmation field required
-            ]);
-
-            $user = User::create([
-                'name' => $request->name,
-                'email' => $request->email,
-                'password' => Hash::make($request->password),
-            ]);
-
+            $data = $request->validated();
+            $user = $service->createUser($data);
             $token = $user->createToken('api_token')->plainTextToken;
 
             return response()->json([
                 'message' => 'User registered successfully',
                 'token' => $token,
-                'user' => $user,
+                'user' => new UserResource($user),
             ], 201);
         } catch (Throwable $th) {
             return response()->json([
@@ -43,24 +36,25 @@ class AuthController extends Controller
     }
 
     // Login
-    public function login(Request $request)
+    public function login(UserRequest $request, UserService $service)
     {
         try {
-            $request->validate([
-                'email' => 'required|email',
-                'password' => 'required',
-            ]);
+            $data = $request->validated();
+            $user = $service->attemptToLogin($data);
 
-            $user = User::where('email', $request->email)->first();
+            if (!$user) {
+                return response()->json([
+                    'message' => 'Login failed, invalid credentials',
+                ], 401);
+            } else {
+                $token = auth()->user()->createToken('api_token')->plainTextToken;
+                return response()->json([
+                    'message' => 'Login successful',
+                    'token' => $token,
+                    'user' => new UserResource($user),
+                ]);
+            }
 
-            Auth::attempt(['email' => $request->email, 'password' => $request->password]);
-            $token = auth()->user()->createToken('api_token')->plainTextToken;
-
-            return response()->json([
-                'message' => 'Login successful',
-                'token' => $token,
-                'user' => $user,
-            ]);
         } catch (Throwable $th) {
             return response()->json([
                 'message' => $th->getMessage(),
@@ -81,6 +75,11 @@ class AuthController extends Controller
     // Get Authenticated User
     public function me(Request $request)
     {
-        return response()->json($request->user());
+        return new UserResource(auth()->user());
+    }
+
+    public function getAllUsers(UserService $service)
+    {
+        return UserResource::collection($service->getAllUsers());
     }
 }

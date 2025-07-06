@@ -12,4 +12,8 @@ class Todos extends Model
         'is_done',
         'created_by'
     ];
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
 }

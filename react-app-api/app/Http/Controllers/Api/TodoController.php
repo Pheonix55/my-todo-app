@@ -4,60 +4,59 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TodoRequest;
-use App\Models\Todos;
-use Illuminate\Http\Request;
+use App\Http\Requests\UpdateTodoRequest;
+use App\Http\Resources\TodoResource;
+use App\Services\TodoService;
 use Throwable;
 
 class TodoController extends Controller
 {
-    public function index()
+    public function index(TodoService $service)
     {
         try {
-            $data = Todos::latest()->paginate(10);
-            if ($data) {
-                return response()->json($data, 200);
-            }
-            return response()->json(['message' => 'no data found'], 200);
+            // $data = $service->getAllTodos();
+            $data = $service->getAllUnfinishedTodos();
+            return TodoResource::collection($data);
         } catch (Throwable $th) {
-            return response()->json(['message' => $th->getMessage()], 500);
+            report($th);
+            return response()->json(['message' => 'Something went wrong'], 500);
         }
     }
-    public function store(TodoRequest $request)
+    public function store(TodoRequest $request, TodoService $service)
     {
         try {
             $data = $request->validated();
-            $data['created_by'] = 1;
-            // $data['created_by'] = auth()->id();
-            Todos::create($data);
-            return response()->json(['message' => 'todo added successfully!'], 201);
+            $response = $service->createTodo($data);
+            return new TodoResource($response);
         } catch (Throwable $th) {
-            return response()->json(['message' => $th->getMessage()], 500);
+            report($th);
+            return response()->json(['message' => 'Something went wrong.'], 500);
         }
     }
-    public function update(TodoRequest $request, $id)
+    public function update(UpdateTodoRequest $request, $id, TodoService $service)
     {
 
         try {
-            $todo = Todos::find($id);
-            if (!$todo) {
-                return response()->json(['message' => 'todo not found'], 400);
+            $data = $request->validated();
+            // dd($data['title'], $data['description'], $data['is_done']);
+
+            $todo = $service->getTodoById($id);
+            $response = $service->updateTodo($data, $todo);
+            if ($response == null) {
+                return response()->json(['message' => 'update service failed'], 404);
             } else {
-
-                $data = $request->validated();
-                $todo->update($data);
-                $todo->save();
-
-                return response()->json(['message' => 'todo updated successfully!'], 200);
+                return new TodoResource($response);
             }
         } catch (Throwable $th) {
-            return response()->json(['message' => $th->getMessage()], 500);
+            report($th);
+            return response()->json(['message' => 'Something went wrong ' . $th->getMessage()], 500);
         }
     }
-    public function delete($id)
+    public function delete($id, TodoService $service)
     {
         try {
-            $todo = Todos::find($id);
-            if (!$todo) {
+            $todo = $service->getTodoById($id);
+            if ($todo == null) {
                 return response()->json(['message' => 'todo not found'], 400);
             } else {
                 $todo->delete();
@@ -65,7 +64,8 @@ class TodoController extends Controller
             }
 
         } catch (Throwable $th) {
-            return response()->json(['message' => $th->getMessage()], 500);
+            report($th);
+            return response()->json(['message' => 'Something went wrong'], 500);
         }
     }
 
