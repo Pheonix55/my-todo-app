@@ -28,7 +28,7 @@ todo-app-laravel-react/
 
 1. Navigate to the backend folder:
 ```bash
-cd backend
+cd react-app-api
 ```
 Install PHP dependencies:
 
@@ -40,7 +40,7 @@ Copy .env and set app key:
 ```bash
 cp .env.example .env
 php artisan key:generate
-
+```
 Set your database config in .env, then run migrations:
 
 ```bash
